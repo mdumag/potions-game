@@ -29,7 +29,6 @@ def get_catalog() -> List[CatalogItem]:
 
     # Open a connection to the database using a transaction.
     with engine.begin() as connection:
-        # We assume that the global_inventory table has a single row which tracks the current state.
         sql = text("""
             SELECT red_potions, green_potions, blue_potions,
                    red_ml, green_ml, blue_ml
@@ -37,7 +36,9 @@ def get_catalog() -> List[CatalogItem]:
             LIMIT 1
         """)
         result = connection.execute(sql)
-        row = result.fetchone()
+        # Use .mappings() to get a dictionary-like row
+        row = result.mappings().fetchone()
+
     
     # If there is no row, return an empty list.
     if row is None:
